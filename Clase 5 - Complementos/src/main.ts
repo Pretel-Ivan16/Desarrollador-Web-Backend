@@ -40,7 +40,6 @@ TIPOS:
 
 type RolUsuario = "Estudiante" | "Instructor" | "Administrador"
 type NivelCurso = "Inicial" | "Intermedio" | "Avanzado"
-type AccionCurso = "CrearCurso" | "InscribirAlumno" | "FinalizarCurso"
 
 class Usuario{
 	nombre: string
