@@ -79,7 +79,7 @@ app.get(
     }
     if(max_price && !isNaN(max_price)){
       product_filtered = product_filtered.filter(
-        (product) => product.price >= Number(max_price)
+        (product) => product.price <= Number(max_price)
       )
     }
 
