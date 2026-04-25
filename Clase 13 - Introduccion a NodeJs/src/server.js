@@ -45,7 +45,7 @@ app.post(
     if (title.length <= 3) {
       return response.json({error: 'El título debe tener más de 3 caracteres.'})
     } else if (price < 1) {
-      return response.json({error: 'El preco debe ser mayor a 1.'})
+      return response.json({error: 'El precio debe ser mayor a 1.'})
     }
 
     const new_product = {
