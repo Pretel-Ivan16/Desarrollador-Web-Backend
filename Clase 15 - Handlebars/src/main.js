@@ -6,14 +6,20 @@ import WorkspaceMember from "./models/workspaceMember.model.js"
 import workspaceMemberRepository from "./repository/member.repository.js"
 import userRepository from "./repository/user.repository.js"
 import workspaceRepository from "./repository/workspace.repository.js"
-
-
+import express, { response } from 'express';
+import healthRouter from "./routes/health.route.js"
 
 connectMongoDB()
 
-//workspaceRepository.create('test 1', 'test', 'test', true)
+const app = express()
 
-//workspaceMemberRepository.create('69936f9cbc903a2cb76c14e9','698ccf5288e8976b62166133', 'owner')
+// Delegamos las consultas que vengan sobre '/api/health' al healthRouter
 
-workspaceMemberRepository.getMemberList('69936f9cbc903a2cb76c14e9')
+app.use('/api/health', healthRouter)
 
+app.listen(ENVIRONMENT.PORT,
+  () => {
+    console.log('La app se está escuchando en el puerto ' + ENVIRONMENT.PORT);
+    
+  }
+)
