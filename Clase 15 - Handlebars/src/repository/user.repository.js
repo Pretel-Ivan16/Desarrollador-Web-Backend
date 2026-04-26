@@ -22,7 +22,7 @@ class UserRepository {
         const new_user = await User.findByIdAndUpdate(
             new_user_props.id, 
             new_user_props, 
-            { new: true } //Esto hara que devuelva el objeto actualizado
+            { new: true } //Esto hará que devuelva el objeto actualizado
         )
         return new_user
     }
@@ -32,7 +32,11 @@ class UserRepository {
         return user
     }
 
-
+    // Llama a algun usuario de la DB
+    async getUsers(){
+        const user = await User.findOne()
+        return user
+    }
 }
 
 
