@@ -1,0 +1,17 @@
+<h1>Soy la vista principal</h1>
+<h2>Hola que tal {{username}}</h2>
+{{#if isVip}}
+    <p>Tenes acceso a contenido VIP</p>
+    {{else}}
+    <p>No tenes acceso a contenido VIP</p>
+{{/if}}
+
+<h3>Comidas favoritas</h3>
+<ul>
+    {{#each favorite_foods}}
+        <li>
+            <h2>{{this.nombre}}</h2>
+            <p>Calorías: {{this.calorias}}</p>
+        </li>
+    {{/each}}
+</ul>
