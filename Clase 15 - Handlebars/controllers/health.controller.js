@@ -4,7 +4,7 @@ class HealthController {
   getApi (request, response) {
     response.status(200).json(
       {
-        message: "API está viva",
+        message: "La API funciona correctamente",
         status: 200,
         ok: true
       }
@@ -22,13 +22,12 @@ class HealthController {
       )
     }
     catch(error){
-      console.log("ERROR EN LA DB:", error);
+      console.error("ERROR EN LA DB:", error);
       return response.status(500).json(
         {
-          message: 'La DB está fallando, contactarse con el administrador',
+          message: 'La DB esta fallando, contactarse con el administrador',
           status: 500,
-          ok: false,
-          code: '3_001'
+          ok: false
         }
       )
     }
