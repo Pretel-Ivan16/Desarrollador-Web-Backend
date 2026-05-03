@@ -1,4 +1,5 @@
 import userRepository from "../repository/user.repository.js"
+import ServerError from "../helpers/error.helper.js"
 
 class AuthController {
 
@@ -9,28 +10,35 @@ class AuthController {
             // Validar que el usuario no exista previamente
             const existingUser = await userRepository.getByEmail(email)
             if (existingUser) {
-                return res.status(400).json({
+                throw new ServerError('Usuario ya registrado', 400)
+                /* return res.status(400).json({
                     ok: false,
                     status: 400,
                     message: 'Usuario ya registrado'
-                })
+                }) */
             }
 
             // Registrar el usuario en la DB
             await userRepository.create(username, email, password)
-
             return res.status(201).json({
                 ok: true,
                 status: 201,
                 message: 'Usuario registrado correctamente'
             })
         } catch (error) {
-            console.error('Error en registro:', error)
-            return res.status(500).json({
-                ok: false,
-                status: 500,
-                message: 'Error interno del servidor'
-            })
+            if (error instanceof ServerError){
+                return res.status(error.status).json({
+                    ok: false,
+                    status: error.status,
+                    message: error.message
+                })
+            } else {
+                return res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Error interno del servidor'
+                })
+            }
         }
     }
 
@@ -41,34 +49,44 @@ class AuthController {
             // Buscar usuario por email
             const user = await userRepository.getByEmail(email)
             if (!user) {
-                return res.status(404).json({
+                throw new ServerError('Usuario no encontrado', 404)
+                /* return res.status(404).json({
                     ok: false,
                     status: 404,
                     message: 'Usuario no encontrado'
-                })
+                }) */
             }
 
             // Verificar contraseña
             if (user.password !== password) {
-                return res.status(401).json({
+                throw new ServerError('Contraseña incorrecta', 401)
+                /* return res.status(401).json({
                     ok: false,
                     status: 401,
-                    message: 'Credenciales incorrectas'
-                })
+                    message: 'Contraseña incorrecta'
+                }) */
             }
 
             return res.status(200).json({
                 ok: true,
                 status: 200,
-                message: 'Usuario registrado correctamente'
+                message: 'Login exitoso'
             })
         } catch (error) {
-            console.error('Error en login:', error)
-            return res.status(500).json({
-                ok: false,
-                status: 500,
-                message: 'Error interno del servidor'
-            })
+            // Si el error es una instancia de ServerError, devolver su status y mensaje
+            if (error instanceof ServerError){
+                return res.status(error.status).json({
+                    ok: false,
+                    status: error.status,
+                    message: error.message
+                })
+            } else {
+                return res.status(500).json({
+                    ok: false,
+                    status: 500,
+                    message: 'Error interno del servidor'
+                })
+            }
         }
     }
 }
