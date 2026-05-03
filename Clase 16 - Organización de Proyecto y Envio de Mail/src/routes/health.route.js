@@ -1,6 +1,6 @@
 import express from 'express'
 import userRepository from '../repository/user.repository.js'
-import healthController from '../../controllers/health.controller.js'
+import healthController from '../controllers/health.controller.js'
 
 const healthRouter = express.Router()
 
