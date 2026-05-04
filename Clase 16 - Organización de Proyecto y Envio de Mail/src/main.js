@@ -9,6 +9,7 @@ import workspaceRepository from "./repository/workspace.repository.js"
 import express from 'express';
 import healthRouter from "./routes/health.route.js"
 import authRouter from "./routes/auth.route.js"
+import mailerTransporter from "./config/mailer.config.js"
 
 connectMongoDB()
 
@@ -30,3 +31,10 @@ app.listen(
         console.log('La aplicacion se esta escuchando en el puerto ' + ENVIRONMENT.PORT)
     }
 )
+
+mailerTransporter.sendMail({
+    from: ENVIRONMENT.MAIL_USER,
+    to: ENVIRONMENT.MAIL_USER,
+    subject: 'Correo de prueba',
+    text: 'Este es un correo de prueba enviado desde Node.js usando Nodemailer'
+})
