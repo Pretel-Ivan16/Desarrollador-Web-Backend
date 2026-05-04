@@ -36,5 +36,5 @@ mailerTransporter.sendMail({
     from: ENVIRONMENT.MAIL_USER,
     to: ENVIRONMENT.MAIL_USER,
     subject: 'Correo de prueba',
-    text: 'Este es un correo de prueba enviado desde Node.js usando Nodemailer'
+    html: 'Este es un correo de prueba enviado desde Node.js usando Nodemailer'
 })
