@@ -32,9 +32,16 @@ app.listen(
     }
 )
 
+/* 
+
 mailerTransporter.sendMail({
     from: ENVIRONMENT.MAIL_USER,
     to: ENVIRONMENT.MAIL_USER,
     subject: 'Correo de prueba',
     html: 'Este es un correo de prueba enviado desde Node.js usando Nodemailer'
-})
+}) 
+    
+*/ 
+
+
+	
