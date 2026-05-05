@@ -26,6 +26,7 @@ class AuthService {
             }) */
         }
 
+        // Se crea un token firmado por el backend con el email del usuario a registar, y una clave secreta. Este token lo vamos a usar para verificar que el usuario es el dueño del email que esta usando para registrarse.
         const verify_email_token = JWT.sign(
           {
             email: email

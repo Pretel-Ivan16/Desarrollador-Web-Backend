@@ -14,6 +14,7 @@ authRouter.post('/login', (req, res) => {
 })
 
 authRouter.get('/verify-email', (req, res) => {
+
     const { verify_email_token } = req.query
     if (!verify_email_token) {
         res.status(400).send(`<h1>Página no encontrada</h1>`)
