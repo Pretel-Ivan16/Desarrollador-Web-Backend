@@ -18,6 +18,7 @@ const app = express()
 // Middleware para parsear JSON
 app.use(express.json())
 
+
 /* 
 Delegamos las consultas que vengan sobre '/api/health' al healthRouter
 */
