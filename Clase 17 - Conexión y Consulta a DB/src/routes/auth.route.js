@@ -14,14 +14,22 @@ authRouter.post('/login', (req, res) => {
 })
 
 authRouter.get('/verify-email', (req, res) => {
+    authController.verifyEmail(req, res)
+})
 
-    const { verify_email_token } = req.query
-    if (!verify_email_token) {
-        res.status(400).send(`<h1>Página no encontrada</h1>`)
-    }
-    // Aquí podríamos actualizar el estado de verificación del usuario en la DB
-    console.log('El usuario intento verificar el email. Su token de validación: ' + verify_email_token);
-    res.status(200).send(`<h1>Mail verificado exitosamente</h1>`)
+// POST /api/auth/request-password-reset
+authRouter.post('/request-password-reset', (req, res) => {
+    authController.requestPasswordReset(req, res)
+})
+
+// GET /api/auth/reset-password/:reset_password_token - Muestra formulario HTML
+authRouter.get('/reset-password/:reset_password_token', (req, res) => {
+    authController.showResetPasswordForm(req, res)
+})
+
+// POST /api/auth/reset-password/:reset_password_token - Procesa el reset
+authRouter.post('/reset-password/:reset_password_token', (req, res) => {
+    authController.resetPassword(req, res)
 })
 
 

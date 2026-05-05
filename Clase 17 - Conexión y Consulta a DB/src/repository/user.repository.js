@@ -22,7 +22,7 @@ class UserRepository {
         const new_user = await User.findByIdAndUpdate(
             new_user_props.id, 
             new_user_props, 
-            { new: true } //Esto hará que devuelva el objeto actualizado
+            { returnDocument: 'after' }
         )
         return new_user
     }
@@ -35,6 +35,15 @@ class UserRepository {
     // Llama a algun usuario de la DB
     async getUsers(){
         const user = await User.findOne()
+        return user
+    }
+
+    async updateEmailVerified({email_verified}, email) {
+        const user = await User.findOneAndUpdate(
+            {email: email},
+            {email_verified: email_verified},
+            { returnDocument: 'after' }
+        )
         return user
     }
 }
