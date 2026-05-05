@@ -1,25 +1,13 @@
 import userRepository from "../repository/user.repository.js"
 import ServerError from "../helpers/error.helper.js"
+import authService from "../../services/auth.service.js"
 
 class AuthController {
 
     async register(req, res) {
         try {
-            const { email, password, username } = req.body
-
-            // Validar que el usuario no exista previamente
-            const existingUser = await userRepository.getByEmail(email)
-            if (existingUser) {
-                throw new ServerError('Usuario ya registrado', 400)
-                /* return res.status(400).json({
-                    ok: false,
-                    status: 400,
-                    message: 'Usuario ya registrado'
-                }) */
-            }
-
-            // Registrar el usuario en la DB
-            await userRepository.create(username, email, password)
+            const { username, email, password } = req.body
+            await authService.register({username, email, password})
             return res.status(201).json({
                 ok: true,
                 status: 201,
