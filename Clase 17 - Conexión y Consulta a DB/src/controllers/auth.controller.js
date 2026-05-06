@@ -115,9 +115,9 @@ class AuthController {
             const { reset_password_token } = req.params
             
             // Verificar que el token sea válido (sin modificar nada)
-            const decoded = await authService.verifyResetPasswordToken(reset_password_token)
+            const decoded = await authService.verifyResetPasswordToken({reset_password_token})
             
-            // Mostrar formulario HTML
+            // Mostrar formulario HTML sin scripts inline (evitar CSP issues)
             return res.status(200).send(`
                 <!DOCTYPE html>
                 <html lang="es">
@@ -162,7 +162,7 @@ class AuthController {
                             color: #555;
                             font-weight: 500;
                         }
-                        input[type="password"] {
+                        input[type="password"], input[type="hidden"] {
                             width: 100%;
                             padding: 12px;
                             border: 1px solid #ddd;
@@ -197,19 +197,27 @@ class AuthController {
                             text-align: center;
                             margin-top: 15px;
                             font-size: 14px;
+                            padding: 10px;
+                            border-radius: 5px;
                         }
                         .success {
-                            color: #27ae60;
+                            color: white;
+                            background-color: #27ae60;
                         }
                         .error {
-                            color: #e74c3c;
+                            color: white;
+                            background-color: #e74c3c;
+                        }
+                        .info {
+                            color: #333;
+                            background-color: #f0f0f0;
                         }
                     </style>
                 </head>
                 <body>
                     <div class="container">
                         <h1>🔐 Restablecer Contraseña</h1>
-                        <form id="resetForm">
+                        <form method="POST" action="/api/auth/reset-password/${reset_password_token}">
                             <div class="form-group">
                                 <label for="new_password">Nueva Contraseña</label>
                                 <input 
@@ -217,6 +225,7 @@ class AuthController {
                                     id="new_password" 
                                     name="new_password" 
                                     placeholder="Ingresa tu nueva contraseña" 
+                                    minlength="6"
                                     required
                                 >
                             </div>
@@ -227,76 +236,77 @@ class AuthController {
                                     id="confirm_password" 
                                     name="confirm_password" 
                                     placeholder="Confirma tu nueva contraseña" 
+                                    minlength="6"
                                     required
                                 >
                             </div>
                             <button type="submit">Restablecer Contraseña</button>
                         </form>
-                        <div id="message" class="message"></div>
+                        <div class="message info">
+                            Por favor, ingresa tu nueva contraseña (mínimo 6 caracteres)
+                        </div>
                     </div>
-
-                    <script>
-                        const form = document.getElementById('resetForm');
-                        const messageDiv = document.getElementById('message');
-                        const token = '${reset_password_token}';
-
-                        form.addEventListener('submit', async (e) => {
-                            e.preventDefault();
-                            
-                            const newPassword = document.getElementById('new_password').value;
-                            const confirmPassword = document.getElementById('confirm_password').value;
-
-                            if (newPassword !== confirmPassword) {
-                                messageDiv.textContent = '❌ Las contraseñas no coinciden';
-                                messageDiv.className = 'message error';
-                                return;
-                            }
-
-                            if (newPassword.length < 6) {
-                                messageDiv.textContent = '❌ La contraseña debe tener al menos 6 caracteres';
-                                messageDiv.className = 'message error';
-                                return;
-                            }
-
-                            try {
-                                const response = await fetch(\`/api/auth/reset-password/\${token}\`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({ new_password: newPassword })
-                                });
-
-                                const data = await response.json();
-
-                                if (data.ok) {
-                                    messageDiv.textContent = '✅ ' + data.message;
-                                    messageDiv.className = 'message success';
-                                    form.style.display = 'none';
-                                    setTimeout(() => {
-                                        alert('Contraseña restablecida correctamente. Redirigiendo...');
-                                        window.location.href = '/';
-                                    }, 2000);
-                                } else {
-                                    messageDiv.textContent = '❌ ' + data.message;
-                                    messageDiv.className = 'message error';
-                                }
-                            } catch (error) {
-                                messageDiv.textContent = '❌ Error en la solicitud';
-                                messageDiv.className = 'message error';
-                                console.error('Error:', error);
-                            }
-                        });
-                    </script>
                 </body>
                 </html>
             `)
         } catch (error) {
             console.error('Error en showResetPasswordForm:', error);
             if (error instanceof ServerError){
-                return res.status(error.status).send(`<h1>❌ ${error.message}</h1>`)
+                return res.status(error.status).send(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Error</title>
+                        <style>
+                            body { font-family: Arial; background: #f5f5f5; }
+                            .error { 
+                                background: #e74c3c; 
+                                color: white; 
+                                padding: 20px; 
+                                border-radius: 5px;
+                                max-width: 400px;
+                                margin: 50px auto;
+                                text-align: center;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="error">
+                            <h1>❌ Error</h1>
+                            <p>${error.message}</p>
+                        </div>
+                    </body>
+                    </html>
+                `)
             } else {
-                return res.status(500).send(`<h1>❌ Token inválido o expirado</h1>`)
+                return res.status(500).send(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Error</title>
+                        <style>
+                            body { font-family: Arial; background: #f5f5f5; }
+                            .error { 
+                                background: #e74c3c; 
+                                color: white; 
+                                padding: 20px; 
+                                border-radius: 5px;
+                                max-width: 400px;
+                                margin: 50px auto;
+                                text-align: center;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="error">
+                            <h1>❌ Error</h1>
+                            <p>Token inválido o expirado</p>
+                        </div>
+                    </body>
+                    </html>
+                `)
             }
         }
     }
@@ -304,10 +314,91 @@ class AuthController {
     async resetPassword(req, res) {
         try {
             const { reset_password_token } = req.params
-            const { new_password } = req.body
+            const { new_password, confirm_password } = req.body
+            
+            // Validar que las contraseñas coincidan
+            if (new_password !== confirm_password) {
+                // Si vino desde formulario HTML, retornar HTML
+                if (req.headers['content-type']?.includes('application/x-www-form-urlencoded')) {
+                    return res.status(400).send(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <title>Error</title>
+                            <style>
+                                body { font-family: Arial; background: #f5f5f5; }
+                                .error { 
+                                    background: #e74c3c; 
+                                    color: white; 
+                                    padding: 20px; 
+                                    border-radius: 5px;
+                                    max-width: 400px;
+                                    margin: 50px auto;
+                                    text-align: center;
+                                }
+                                a { color: white; text-decoration: none; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="error">
+                                <h1>❌ Error</h1>
+                                <p>Las contraseñas no coinciden. Por favor intenta de nuevo.</p>
+                                <a href="javascript:history.back()">Volver</a>
+                            </div>
+                        </body>
+                        </html>
+                    `)
+                }
+                // Si vino desde fetch JSON
+                return res.status(400).json({
+                    ok: false,
+                    status: 400,
+                    message: 'Las contraseñas no coinciden'
+                })
+            }
             
             await authService.resetPassword({reset_password_token, new_password})
             
+            // Si vino desde formulario HTML, retornar HTML de éxito
+            if (req.headers['content-type']?.includes('application/x-www-form-urlencoded')) {
+                return res.status(200).send(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Éxito</title>
+                        <style>
+                            body { font-family: Arial; background: #f5f5f5; }
+                            .success { 
+                                background: #27ae60; 
+                                color: white; 
+                                padding: 20px; 
+                                border-radius: 5px;
+                                max-width: 400px;
+                                margin: 50px auto;
+                                text-align: center;
+                            }
+                            a { color: white; text-decoration: none; margin-top: 15px; display: inline-block; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="success">
+                            <h1>✅ Éxito</h1>
+                            <p>Tu contraseña ha sido restablecida correctamente.</p>
+                            <p>Redirigiendo...</p>
+                        </div>
+                        <script>
+                            setTimeout(() => {
+                                window.location.href = '/';
+                            }, 3000);
+                        </script>
+                    </body>
+                    </html>
+                `)
+            }
+            
+            // Si vino desde fetch JSON
             return res.status(200).json({
                 ok: true,
                 status: 200,

@@ -6,25 +6,42 @@ import WorkspaceMember from "./models/workspaceMember.model.js"
 import workspaceMemberRepository from "./repository/member.repository.js"
 import userRepository from "./repository/user.repository.js"
 import workspaceRepository from "./repository/workspace.repository.js"
-import express from 'express';
-import healthRouter from "./routes/health.route.js"
-import authRouter from "./routes/auth.route.js"
+import express, { response } from 'express';
+import healthRouter from "./routes/health.router.js"
+import authRouter from "./routes/auth.router.js"
 import mailerTransporter from "./config/mailer.config.js"
+import cors from 'cors'
+import authMiddleware from "./middlewares/authMiddleware.js"
+import workspaceRouter from "./routes/workspace.router.js"
+
 
 connectMongoDB()
 
+
 const app = express()
 
-// Middleware para parsear JSON
+
+app.use(cors())
+
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 
 /* 
 Delegamos las consultas que vengan sobre '/api/health' al healthRouter
 */
-
 app.use('/api/health', healthRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/workspace', workspaceRouter)
+
+app.get(
+    '/api/test', 
+    authMiddleware, 
+    (request, response) => {
+        const {user} = request
+        response.send('ok, vos sos: ' + user.id)
+    }
+)
 
 app.listen(
     ENVIRONMENT.PORT, 
@@ -33,16 +50,19 @@ app.listen(
     }
 )
 
-/* 
 
-mailerTransporter.sendMail({
-    from: ENVIRONMENT.MAIL_USER,
-    to: ENVIRONMENT.MAIL_USER,
-    subject: 'Correo de prueba',
-    html: 'Este es un correo de prueba enviado desde Node.js usando Nodemailer'
-}) 
-    
-*/ 
+/* mailerTransporter.sendMail(
+    {
+        from: ENVIRONMENT.MAIL_USER,
+        to: ENVIRONMENT.MAIL_USER, //Aca va a donde quieren enviar
+        subject: 'Test de envio de email',
+        html: '<h1>Si recibis este email, el sistema de envio de emails funciona correctamente</h1>'
+    }
+)
+ */
 
 
+//workspaceRepository.create('test', 'lorem', '', true)
+
+//workspaceMemberRepository.create('69c1a7a7f5505d11801c0778', '69b1d51bf91f9031fa4f2d04', 'owner')
 	
