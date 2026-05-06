@@ -1,0 +1,19 @@
+
+> clase-11@1.0.0 dev
+> node --watch src/main.js
+
+◇ injected env (6) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+La aplicacion se esta escuchando en el puerto 8080
+Conexion exitosa
+Restarting 'src/main.js'
+◇ injected env (6) from .env // tip: ⌘ suppress logs { quiet: true }
+La aplicacion se esta escuchando en el puerto 8080
+Conexion exitosa
+Restarting 'src/main.js'
+◇ injected env (6) from .env // tip: ◈ encrypted .env [www.dotenvx.com]
+La aplicacion se esta escuchando en el puerto 8080
+Conexion exitosa
+Restarting 'src/main.js'
+◇ injected env (6) from .env // tip: ⌘ suppress logs { quiet: true }
+La aplicacion se esta escuchando en el puerto 8080
+Conexion exitosa

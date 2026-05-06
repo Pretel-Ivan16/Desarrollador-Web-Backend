@@ -20,8 +20,13 @@ connectMongoDB()
 
 const app = express()
 
-
-app.use(cors())
+// SIMPLE CORS - Allow any localhost port during development
+app.use(cors({
+    origin: true, // Allow all origins (development only)
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 app.use(express.json())
 
